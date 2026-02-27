@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>High Intensity Final Ranking</title>
+  <style>
+    body {
+      font-family: "Times New Roman", Times, serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: white;
+      text-align: center;
+      padding: 40px;
+    }
+
+    h1 {
+      font-size: 42px;
+      margin-bottom: 30px;
+      letter-spacing: 1px;
+    }
+
+    #nameBox {
+      font-size: 32px;
+      margin: 30px;
+      min-height: 60px;
+      transition: all 0.5s ease-in-out;
+    }
+
+    button {
+      padding: 12px 28px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      background: #00c6ff;
+      color: black;
+      font-weight: bold;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background: #00e0ff;
+      transform: scale(1.05);
+    }
+
+    .final-card {
+      margin-top: 40px;
+      padding: 40px;
+      background: white;
+      color: black;
+      border-radius: 15px;
+      width: 420px;
+      margin-left: auto;
+      margin-right: auto;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .winner-name {
+      font-size: 30px;
+      font-weight: bold;
+      margin-bottom: 15px;
+    }
+
+    .badge {
+      display: inline-block;
+      padding: 12px 22px;
+      background: #ff4d4d;
+      color: white;
+      border-radius: 25px;
+      font-size: 18px;
+      font-weight: bold;
+      margin-top: 10px;
+    }
+
+    .trophy {
+      font-size: 60px;
+      margin-bottom: 15px;
+    }
+
+    .loading {
+      font-size: 22px;
+      opacity: 0.8;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+<h1>High Intensity Final Ranking</h1>
+
+<div id="nameBox" class="loading">Loading data...</div>
+
+<button onclick="nextName()">Start / Reveal Next</button>
+
+<script>
+let data = [];
+let index = 0;
+let isLoaded = false;
+
+// 🔁 REPLACE THIS WITH YOUR REAL WEB APP URL
+const sheetURL = "YOUR_WEB_APP_URL_HERE";
+
+fetch(sheetURL)
+  .then(response => response.json())
+  .then(result => {
+      result.sort((a, b) => b.count - a.count);
+      data = result.slice(0, 5); // ✅ Top 5 only
+      isLoaded = true;
+      document.getElementById("nameBox").innerHTML = "Click Start to Begin";
+      document.getElementById("nameBox").classList.remove("loading");
+  })
+  .catch(error => {
+      document.getElementById("nameBox").innerHTML = "Error loading data.";
+      console.error("Fetch Error:", error);
+  });
+
+function nextName() {
+    if (!isLoaded) {
+        document.getElementById("nameBox").innerHTML = "Still loading data...";
+        return;
+    }
+
+    if (index < data.length) {
+        document.getElementById("nameBox").innerHTML =
+          `<strong>Rank ${index + 1}</strong><br>${data[index].name}`;
+        index++;
+    } 
+    else {
+        showFinalWinner();
+    }
+}
+
+function showFinalWinner() {
+    const winner = data[0];
+
+    document.body.innerHTML = `
+      <h1>🏆 Top Performer - High Intensity Cases</h1>
+
+      <div class="final-card">
+          <div class="trophy">🏆</div>
+          <div class="winner-name">${winner.name}</div>
+          <div class="badge">
+            ${winner.count} High Intensity Cases Handled
+          </div>
+      </div>
+    `;
+}
+</script>
+
+</body>
+</html>
